@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adopt Me VIP Reward & Private Server Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'cursive'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        adoptPink: '#FF6B8B',
+                        adoptYellow: '#FFD152',
+                        adoptCyan: '#4ED0F9',
+                        adoptPurple: '#936DFF',
+                        adoptGreen: '#45D09E',
+                        adoptDark: '#1E1B2E',
+                        adoptSurface: '#292440'
+                    },
+                    boxShadow: {
+                        'glow-pink': '0 0 25px rgba(255, 107, 139, 0.45)',
+                        'glow-cyan': '0 0 25px rgba(78, 208, 249, 0.45)',
+                        'glow-yellow': '0 0 25px rgba(255, 209, 82, 0.45)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', cursive;
+            background: radial-gradient(circle at 50% 20%, #2e2652 0%, #151226 100%);
+            min-height: 100vh;
+        }
+
+        .canvas-container {
+            position: relative;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 48px;
+            background: linear-gradient(180deg, #FFD152 0%, #FF9F1C 100%);
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+            z-index: 30;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #936DFF;
+            border-radius: 999px;
+        }
+    </style>
+</head>
+<body class="text-white selection:bg-adoptPink selection:text-white pb-16">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-purple-500/20 bg-adoptDark/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <!-- Secret Trigger: Klik logo paw 5 kali berturut-turut untuk buka panel admin di HP -->
+                <div id="secretLogoTrigger" onclick="handleSecretTap()" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-adoptPink to-adoptYellow flex items-center justify-center text-white shadow-glow-pink cursor-pointer select-none">
+                    <i class="fa-solid fa-paw text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                        Adopt Me <span class="text-xs bg-adoptPink text-white px-2 py-0.5 rounded-full uppercase">VIP Spin Hub</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Server Status Indicator -->
+            <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-adoptGreen text-xs font-nunito font-bold">
+                    <span class="w-2 h-2 rounded-full bg-adoptGreen animate-pulse"></span>
+                    VIP Server Online
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 mt-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- LEFT COLUMN: Wheel & Player Area (7 Cols) -->
+            <div class="lg:col-span-7 flex flex-col items-center">
+                
+                <div class="w-full bg-gradient-to-r from-purple-900/40 via-pink-900/20 to-purple-900/40 border border-purple-500/30 rounded-2xl p-4 text-center mb-6">
+                    <p class="text-xs md:text-sm text-purple-200 font-nunito font-semibold flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lock text-adoptYellow"></i>
+                        Protected System: Exactly <span class="text-adoptYellow font-bold">1 Free Spin</span> per Roblox player!
+                    </p>
+                </div>
+
+                <!-- Canvas Wheel Box -->
+                <div class="canvas-container relative flex items-center justify-center my-4">
+                    <div class="wheel-pointer"></div>
+                    <canvas id="wheelCanvas" width="460" height="460" class="max-w-[340px] sm:max-w-[420px] md:max-w-[460px]"></canvas>
+
+                    <div class="absolute w-20 h-20 rounded-full bg-adoptDark border-4 border-adoptYellow shadow-glow-yellow flex flex-col items-center justify-center pointer-events-none z-20">
+                        <i class="fa-solid fa-egg text-adoptYellow text-2xl animate-pulse"></i>
+                        <span class="text-[9px] uppercase tracking-wider text-purple-300 font-extrabold mt-0.5">SPIN</span>
+                    </div>
+                </div>
+
+                <!-- Player Action Area -->
+                <div class="w-full max-w-md bg-adoptSurface/90 border border-purple-500/30 p-5 rounded-3xl shadow-xl mt-4">
+                    <div id="spinInputContainer">
+                        <label class="block text-xs uppercase tracking-wider text-purple-300 font-nunito font-extrabold mb-2 flex items-center justify-between">
+                            <span>Roblox Username</span>
+                            <span class="text-[11px] text-gray-400 font-normal">Authentic Profile Verification</span>
+                        </label>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-purple-400 text-sm"></i>
+                                <input id="usernameInput" type="text" placeholder="Enter your Roblox username..." 
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-adoptDark/90 border border-purple-500/40 text-sm focus:outline-none focus:border-adoptPink text-white placeholder-gray-500 font-nunito">
+                            </div>
+                            <button onclick="verifyRobloxUser()" id="btnVerify" class="px-4 py-2.5 bg-purple-700 hover:bg-purple-600 rounded-xl font-nunito font-extrabold text-xs transition flex items-center gap-1.5 active:scale-95">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Check</span>
+                            </button>
+                        </div>
+
+                        <!-- Player Preview Box -->
+                        <div id="playerAvatarCard" class="hidden items-center gap-3 p-3 bg-purple-950/60 rounded-2xl border border-purple-500/20 mb-4">
+                            <img id="playerHeadshotImg" src="" alt="Avatar" class="w-12 h-12 rounded-xl bg-purple-900 border border-adoptPink object-cover shadow-sm">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span id="playerDisplayName" class="text-sm font-bold text-white">Player</span>
+                                    <i class="fa-solid fa-circle-check text-adoptCyan text-xs"></i>
+                                </div>
+                                <span id="playerRobloxUser" class="text-xs text-purple-300 font-mono">@Username</span>
+                            </div>
+                            <span class="text-[10px] bg-green-500/20 text-adoptGreen border border-green-500/30 px-2 py-0.5 rounded-full font-bold">READY</span>
+                        </div>
+
+                        <!-- Spin Button -->
+                        <button id="spinButton" onclick="executeSpinAction()" disabled
+                            class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-adoptPink via-purple-600 to-adoptPink bg-[length:200%_auto] hover:bg-right font-nunito font-black text-base uppercase tracking-wider text-white shadow-glow-pink transition duration-300 active:scale-98 disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Spin Adopt Me Wheel</span>
+                        </button>
+                    </div>
+
+                    <!-- Already Spun Banner -->
+                    <div id="alreadySpunContainer" class="hidden text-center py-3">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-adoptYellow flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">You have already completed your spin!</h3>
+                        <p class="text-xs text-gray-300 font-nunito mt-1 mb-3">Each user is entitled to 1 spin. View your active prize claim ticket below.</p>
+                        <button onclick="openTicketModal(currentUserSpunTicket)" class="px-4 py-2 bg-adoptCyan text-adoptDark font-nunito font-black text-xs rounded-xl shadow-glow-cyan hover:scale-105 transition active:scale-95">
+                            <i class="fa-solid fa-receipt mr-1"></i> View My Reward Ticket
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Drops & Live Claims (5 Cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="bg-adoptSurface/90 border border-purple-500/30 rounded-3xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4 border-b border-purple-500/20 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-gift text-adoptYellow"></i>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-purple-200">Current Prize Pool</h2>
+                        </div>
+                        <span id="activeItemsBadge" class="text-[11px] bg-purple-900/80 text-purple-300 font-mono px-2 py-0.5 rounded-lg border border-purple-500/30">8 Items</span>
+                    </div>
+
+                    <div id="prizePoolList" class="space-y-2 max-h-[260px] overflow-y-auto custom-scroll pr-1"></div>
+                </div>
+
+                <div class="bg-adoptSurface/90 border border-purple-500/30 rounded-3xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4 border-b border-purple-500/20 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-adoptGreen opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-adoptGreen"></span>
+                            </span>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-purple-200">Recent Claims Activity</h2>
+                        </div>
+                        <span class="text-[10px] text-gray-400 font-nunito">Live VIP Queue</span>
+                    </div>
+
+                    <div id="recentClaimsList" class="space-y-2.5 max-h-[220px] overflow-y-auto custom-scroll pr-1 text-xs"></div>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-900/40 to-adoptSurface border border-purple-500/30 rounded-3xl p-5 text-xs font-nunito">
+                    <h3 class="font-bold text-white uppercase tracking-wider text-xs flex items-center gap-2 mb-2 text-adoptPink">
+                        <i class="fa-solid fa-circle-question"></i> How to claim your prize
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-1.5 text-purple-200">
+                        <li>Enter your Roblox username and click <b class="text-white">Check</b>.</li>
+                        <li>Spin the wheel to roll your random Adopt Me item.</li>
+                        <li>Copy your unique <b class="text-adoptYellow">Claim Ticket Code</b>.</li>
+                        <li>Click <b class="text-adoptCyan">JOIN PRIVATE SERVER</b> to open the server directly.</li>
+                        <li>Show your ticket code to the trade host in-game to receive the pet!</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- WIN REWARD MODAL -->
+    <div id="rewardModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-adoptDark border-2 border-adoptPink/80 max-w-md w-full rounded-3xl p-6 shadow-glow-pink relative text-center">
+            
+            <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-adoptPink to-adoptYellow flex items-center justify-center text-3xl shadow-glow-yellow mb-3">
+                <i id="modalPetIcon" class="fa-solid fa-dragon text-white"></i>
+            </div>
+
+            <span id="modalPetTag" class="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-adoptPink text-white uppercase tracking-widest inline-block mb-1">MFR</span>
+            <h2 id="modalPetName" class="text-2xl font-black text-white">Shadow Dragon</h2>
+            <p class="text-xs text-purple-300 font-nunito mt-1">Congratulations! Your reward has been generated.</p>
+
+            <div class="bg-adoptSurface/90 border border-purple-500/40 rounded-2xl p-4 my-4">
+                <div class="text-[11px] text-gray-400 font-nunito uppercase tracking-wider mb-1">Your Digital Claim Ticket Code</div>
+                <div class="flex items-center justify-center gap-2">
+                    <span id="modalTicketCode" class="font-mono text-base md:text-lg font-black text-adoptYellow select-all">ADM-99482-VIP</span>
+                    <button onclick="copyTicketCodeModal()" class="p-1.5 px-2 bg-purple-800 hover:bg-purple-700 text-xs rounded-lg text-purple-200 transition">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+                <p id="copyNotification" class="text-[10px] text-adoptGreen font-bold mt-1 opacity-0 transition-opacity">Copied to clipboard!</p>
+            </div>
+
+            <a id="modalJoinVipLink" href="#" target="_blank" onclick="onJoinPrivateServerClick()"
+               class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-adoptCyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-adoptDark font-nunito font-black text-sm uppercase tracking-wider shadow-glow-cyan flex items-center justify-center gap-2 transition active:scale-95 mb-2">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <span>Join Private Server</span>
+            </a>
+
+            <button onclick="closeRewardModal()" class="text-xs text-gray-400 hover:text-white font-nunito mt-2 transition">
+                Close & Return to Portal
+            </button>
+        </div>
+    </div>
+
+    <!-- TICKET DETAIL MODAL -->
+    <div id="ticketModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-adoptDark border border-purple-500/40 max-w-sm w-full rounded-3xl p-5 shadow-2xl relative text-center">
+            <button onclick="closeTicketModal()" class="absolute right-4 top-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <i class="fa-solid fa-receipt text-3xl text-adoptCyan mb-2"></i>
+            <h3 class="text-lg font-bold text-white">Claim Verification Ticket</h3>
+            
+            <div class="bg-adoptSurface border border-purple-500/30 rounded-2xl p-4 my-4 text-left font-nunito space-y-2 text-xs">
+                <div class="flex justify-between border-b border-purple-500/20 pb-1">
+                    <span class="text-gray-400">Player:</span>
+                    <span id="ticketPlayerName" class="font-bold text-white font-mono">--</span>
+                </div>
+                <div class="flex justify-between border-b border-purple-500/20 pb-1">
+                    <span class="text-gray-400">Reward:</span>
+                    <span id="ticketRewardName" class="font-bold text-adoptPink">--</span>
+                </div>
+                <div class="flex justify-between border-b border-purple-500/20 pb-1">
+                    <span class="text-gray-400">Claim Code:</span>
+                    <span id="ticketCodeText" class="font-bold font-mono text-adoptYellow">--</span>
+                </div>
+                <div class="flex justify-between items-center pt-1">
+                    <span class="text-gray-400">Status:</span>
+                    <span id="ticketStatusBadge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500/20 text-adoptYellow">PENDING</span>
+                </div>
+            </div>
+
+            <a id="ticketModalVipLink" href="#" target="_blank"
+               class="w-full py-2.5 rounded-xl bg-adoptCyan text-adoptDark font-nunito font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition hover:scale-105 active:scale-95">
+                <i class="fa-solid fa-gamepad"></i> Open Private Server
+            </a>
+        </div>
+    </div>
+
+    <!-- ADMIN VIP DASHBOARD MODAL -->
+    <div id="adminModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 md:p-6">
+        <div class="bg-adoptDark border-2 border-adoptPurple max-w-4xl w-full h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+            
+            <div class="p-4 border-b border-purple-500/30 flex items-center justify-between bg-adoptSurface/90">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-purple-800 text-adoptYellow flex items-center justify-center">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            Adopt Me VIP Admin Console
+                            <span class="text-[10px] bg-adoptPink text-white px-2 py-0.2 rounded-full">Owner Access</span>
+                        </h2>
+                    </div>
+                </div>
+                <button onclick="closeAdminModal()" class="w-8 h-8 rounded-full bg-purple-900/60 hover:bg-purple-800 text-gray-300 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Login View -->
+            <div id="adminAuthView" class="flex-1 flex items-center justify-center p-6">
+                <div class="max-w-sm w-full bg-adoptSurface border border-purple-500/30 p-6 rounded-3xl text-center space-y-4 shadow-xl">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-900/80 text-adoptYellow flex items-center justify-center mx-auto text-2xl">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Private Master Passkey</h3>
+                        <p class="text-xs text-purple-300 font-nunito mt-1">Enter your confidential access passphrase.</p>
+                    </div>
+                    <input id="adminPassInput" type="password" placeholder="Enter private passcode..."
+                        class="w-full px-4 py-2.5 rounded-xl bg-adoptDark border border-purple-500/50 text-white font-nunito text-sm text-center focus:outline-none focus:border-adoptPink">
+                    <button onclick="handleAdminLogin()" class="w-full py-2.5 rounded-xl bg-adoptPink hover:bg-pink-600 font-nunito font-extrabold text-sm text-white transition active:scale-95">
+                        Authenticate Access
+                    </button>
+                    <p id="adminLoginErr" class="text-xs text-red-400 font-bold hidden"></p>
+                </div>
+            </div>
+
+            <!-- Dashboard Content View -->
+            <div id="adminContentView" class="flex-1 flex flex-col overflow-hidden hidden">
+                <div class="flex border-b border-purple-500/20 bg-purple-950/40 text-xs font-nunito font-bold overflow-x-auto">
+                    <button onclick="switchAdminTab('petsTab')" id="tabBtn-petsTab" class="px-5 py-3 border-b-2 border-adoptPink text-white flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-paw"></i> Manage Pets Pool
+                    </button>
+                    <button onclick="switchAdminTab('claimsTab')" id="tabBtn-claimsTab" class="px-5 py-3 border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-list-check"></i> Claims Queue (<span id="adminPendingCount">0</span>)
+                    </button>
+                    <button onclick="switchAdminTab('serverTab')" id="tabBtn-serverTab" class="px-5 py-3 border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-link"></i> Private Server Settings
+                    </button>
+                    <button onclick="switchAdminTab('playersTab')" id="tabBtn-playersTab" class="px-5 py-3 border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-users"></i> Spun Players Registry
+                    </button>
+                </div>
+
+                <!-- Tab 1: Pets Pool -->
+                <div id="petsTab" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scroll">
+                    <div class="flex flex-wrap items-center justify-between gap-2 bg-purple-950/40 p-3 rounded-2xl border border-purple-500/20">
+                        <span class="text-xs text-purple-200 font-nunito">Customize item rewards, potion tags, colors, and win probabilities.</span>
+                        <div class="flex gap-2">
+                            <button onclick="autoBalanceChances()" class="px-3 py-1.5 bg-purple-700 hover:bg-purple-600 rounded-xl text-xs font-nunito font-bold text-white transition">
+                                <i class="fa-solid fa-scale-balanced mr-1"></i> Auto-Balance to 100%
+                            </button>
+                            <button onclick="openAddPetModal()" class="px-3 py-1.5 bg-adoptGreen hover:bg-emerald-600 rounded-xl text-xs font-nunito font-bold text-adoptDark transition">
+                                <i class="fa-solid fa-plus mr-1"></i> Add New Pet
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-adoptSurface rounded-2xl border border-purple-500/30 overflow-hidden text-xs">
+                        <table class="w-full text-left font-nunito">
+                            <thead class="bg-purple-950/80 text-purple-300 uppercase text-[10px] tracking-wider border-b border-purple-500/20">
+                                <tr>
+                                    <th class="p-3">Item Name</th>
+                                    <th class="p-3">Tag</th>
+                                    <th class="p-3">Rarity</th>
+                                    <th class="p-3">Chance (%)</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminPetsTableBody" class="divide-y divide-purple-500/10"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Claims Queue -->
+                <div id="claimsTab" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll hidden">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="text-xs text-purple-200 font-nunito">Player spin outcomes awaiting in-game fulfillment.</div>
+                        <button onclick="exportClaimsData()" class="px-3 py-1.5 bg-purple-800 hover:bg-purple-700 rounded-xl text-xs font-nunito font-bold text-purple-200">
+                            <i class="fa-solid fa-download mr-1"></i> Export JSON
+                        </button>
+                    </div>
+
+                    <div class="bg-adoptSurface rounded-2xl border border-purple-500/30 overflow-hidden text-xs">
+                        <table class="w-full text-left font-nunito">
+                            <thead class="bg-purple-950/80 text-purple-300 uppercase text-[10px] tracking-wider border-b border-purple-500/20">
+                                <tr>
+                                    <th class="p-3">Player</th>
+                                    <th class="p-3">Won Pet</th>
+                                    <th class="p-3">Claim Code</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3 text-right">Fulfillment</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminClaimsTableBody" class="divide-y divide-purple-500/10"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Server Settings -->
+                <div id="serverTab" class="flex-1 overflow-y-auto p-6 space-y-5 custom-scroll hidden font-nunito">
+                    <div class="bg-adoptSurface border border-purple-500/30 rounded-3xl p-5 max-w-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Roblox VIP Private Server URL</h3>
+                        <p class="text-xs text-purple-300">Set the exact URL of your private Adopt Me server. When players click "JOIN PRIVATE SERVER", they will be directed here.</p>
+                        
+                        <div>
+                            <input id="adminVipServerInput" type="url" placeholder="https://www.roblox.com/games/920587237/Adopt-Me?privateServerLinkCode=..."
+                                class="w-full px-4 py-2.5 rounded-xl bg-adoptDark border border-purple-500/40 text-xs text-white focus:outline-none focus:border-adoptPink">
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button onclick="saveVipServerLink()" class="px-4 py-2 bg-adoptPink hover:bg-pink-600 rounded-xl text-xs font-bold text-white transition">
+                                Save Link
+                            </button>
+                            <button onclick="testVipServerLink()" class="px-4 py-2 bg-purple-800 hover:bg-purple-700 rounded-xl text-xs font-bold text-purple-200 transition">
+                                Test Link
+                            </button>
+                        </div>
+                        <span id="vipSavedIndicator" class="text-xs text-adoptGreen font-bold hidden">Link updated successfully!</span>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Players Registry -->
+                <div id="playersTab" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll hidden font-nunito">
+                    <div class="text-xs text-purple-200">Registered player hardware & username records. You can reset a player's spin limit here if needed.</div>
+                    <div class="bg-adoptSurface rounded-2xl border border-purple-500/30 overflow-hidden text-xs">
+                        <table class="w-full text-left">
+                            <thead class="bg-purple-950/80 text-purple-300 uppercase text-[10px] tracking-wider border-b border-purple-500/20">
+                                <tr>
+                                    <th class="p-3">Roblox Username</th>
+                                    <th class="p-3">Device Fingerprint</th>
+                                    <th class="p-3">Date</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminPlayersTableBody" class="divide-y divide-purple-500/10"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PET EDIT/CREATE MODAL -->
+    <div id="petEditModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-adoptDark border border-purple-500/50 max-w-md w-full rounded-3xl p-5 shadow-2xl font-nunito">
+            <h3 id="petEditModalTitle" class="text-base font-bold text-white mb-3">Add Adopt Me Item</h3>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-purple-300 block mb-1">Item Name</label>
+                    <input id="petNameInput" type="text" placeholder="e.g. Frost Dragon" class="w-full px-3 py-2 bg-adoptSurface rounded-xl border border-purple-500/40 text-white focus:outline-none focus:border-adoptPink">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-purple-300 block mb-1">Potion Tag</label>
+                        <select id="petTagInput" class="w-full px-3 py-2 bg-adoptSurface rounded-xl border border-purple-500/40 text-white focus:outline-none">
+                            <option value="MFR">MFR (Mega Fly Ride)</option>
+                            <option value="NFR">NFR (Neon Fly Ride)</option>
+                            <option value="FR">FR (Fly Ride)</option>
+                            <option value="R">R (Ride Only)</option>
+                            <option value="F">F (Fly Only)</option>
+                            <option value="Regular">Regular (No Pot)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-purple-300 block mb-1">Rarity</label>
+                        <select id="petRarityInput" class="w-full px-3 py-2 bg-adoptSurface rounded-xl border border-purple-500/40 text-white focus:outline-none">
+                            <option value="Legendary">Legendary</option>
+                            <option value="Ultra-Rare">Ultra-Rare</option>
+                            <option value="Rare">Rare</option>
+                            <option value="Uncommon">Uncommon</option>
+                            <option value="Common">Common</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-purple-300 block mb-1">Chance (%)</label>
+                        <input id="petChanceInput" type="number" step="0.1" min="0.1" max="100" class="w-full px-3 py-2 bg-adoptSurface rounded-xl border border-purple-500/40 text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-purple-300 block mb-1">Wheel Slice Color</label>
+                        <input id="petColorInput" type="color" value="#FF6B8B" class="w-full h-8 bg-adoptSurface rounded-xl border border-purple-500/40 p-1 cursor-pointer">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-purple-300 block mb-1">FontAwesome Icon Class</label>
+                    <input id="petIconInput" type="text" placeholder="fa-dragon, fa-paw, fa-feather..." class="w-full px-3 py-2 bg-adoptSurface rounded-xl border border-purple-500/40 text-white focus:outline-none">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-5">
+                <button onclick="closePetEditModal()" class="px-4 py-2 bg-purple-900 hover:bg-purple-800 text-purple-200 text-xs rounded-xl font-bold">Cancel</button>
+                <button onclick="savePetItemAction()" class="px-4 py-2 bg-adoptPink hover:bg-pink-600 text-white text-xs rounded-xl font-bold">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT ENGINE -->
+    <script>
+        /* ==========================================================================
+           ADMIN MASTER PASSWORD (LOCKED PERMANENTLY)
+           ========================================================================== */
+        const MASTER_PASSWORD = "JURAGANADAM0217";
+
+        /* ==========================================================================
+           STATE & DEFAULT DATA
+           ========================================================================== */
+        
+           const DEFAULT_PETS = [
+            { id: "pet-1", name: "Shadow Dragon", tag: "FR", rarity: "Legendary", chance: 50, color: "#2B1A4A", icon: "fa-dragon" },
+            { id: "pet-2", name: "Bat Dragon", tag: "FR", rarity: "Legendary", chance: 50, color: "#E05638", icon: "fa-paw" },
+            { id: "pet-3", name: "Frost Dragon", tag: "FR", rarity: "Legendary", chance: 50, color: "#38A3A5", icon: "fa-icicles" },
+        
+        ];
+        let state = {
+            pets: JSON.parse(localStorage.getItem('adoptme_pets')) || DEFAULT_PETS,
+            claims: JSON.parse(localStorage.getItem('adoptme_claims')) || [],
+            spunUsers: JSON.parse(localStorage.getItem('adoptme_spun_users')) || [],
+            vipServerUrl: localStorage.getItem('adoptme_vip_url') || "https://www.roblox.com.et/games/920587237/Adopt-Me?privateServerLinkCode=97667387403684286472966094150087",
+            isAdminAuthenticated: false,
+            editingPetId: null
+        };
+
+        let currentUser = null;
+        let currentUserSpunTicket = null;
+        let deviceFingerprint = null;
+        let isSpinning = false;
+        let wheelAngle = 0;
+        let secretTapCount = 0;
+        let secretTapTimeout = null;
+
+        /* ==========================================================================
+           SECRET ACCESS SHORTCUTS
+           - Keyboard: Ctrl + Shift + A
+           - Mobile: Tap logo 5x
+           ========================================================================== */
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                openAdminModal();
+            }
+        });
+
+        function handleSecretTap() {
+            secretTapCount++;
+            clearTimeout(secretTapTimeout);
+            secretTapTimeout = setTimeout(() => {
+                secretTapCount = 0;
+            }, 2000);
+
+            if (secretTapCount >= 5) {
+                secretTapCount = 0;
+                openAdminModal();
+            }
+        }
+
+        /* ==========================================================================
+           AUDIO SYNTHESIZER
+           ========================================================================== */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTickSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.04);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.04);
+        }
+
+        function playWinSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const freqs = [392, 523.25, 659.25, 783.99];
+            freqs.forEach((f, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(f, audioCtx.currentTime + (i * 0.12));
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime + (i * 0.12));
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.12) + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + (i * 0.12));
+                osc.stop(audioCtx.currentTime + (i * 0.12) + 0.35);
+            });
+        }
+
+        /* ==========================================================================
+           DEVICE FINGERPRINTING & ANTI-ABUSE
+           ========================================================================== */
+        function generateDeviceFingerprint() {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            let debugRenderer = "generic";
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                debugRenderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "unknown_gl";
+            }
+            const rawMetrics = `${navigator.userAgent}|${screen.width}x${screen.height}|${new Date().getTimezoneOffset()}|${debugRenderer}`;
+            let hash = 0;
+            for (let i = 0; i < rawMetrics.length; i++) {
+                hash = ((hash << 5) - hash) + rawMetrics.charCodeAt(i);
+                hash |= 0;
+            }
+            return 'HW-' + Math.abs(hash).toString(16).toUpperCase();
+        }
+
+        /* ==========================================================================
+           ROBLOX USER VERIFICATION
+           ========================================================================== */
+        async function verifyRobloxUser() {
+            const usernameInput = document.getElementById('usernameInput');
+            const rawName = usernameInput.value.trim();
+            const btnVerify = document.getElementById('btnVerify');
+            const avatarCard = document.getElementById('playerAvatarCard');
+            const headshotImg = document.getElementById('playerHeadshotImg');
+            const displayName = document.getElementById('playerDisplayName');
+            const robloxUser = document.getElementById('playerRobloxUser');
+            const spinBtn = document.getElementById('spinButton');
+
+            if (!rawName || rawName.length < 3) {
+                alert("Please enter a valid Roblox username.");
+                return;
+            }
+
+            btnVerify.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+            btnVerify.disabled = true;
+
+            const normalized = rawName.toLowerCase();
+            currentUser = { username: rawName, normalized: normalized };
+
+            const alreadySpun = state.spunUsers.find(u => u.normalized === normalized || u.fingerprint === deviceFingerprint);
+            
+            setTimeout(() => {
+                btnVerify.innerHTML = `<i class="fa-solid fa-check"></i> <span>Check</span>`;
+                btnVerify.disabled = false;
+
+                const fallbackAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(rawName)}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+                headshotImg.src = fallbackAvatar;
+                displayName.textContent = rawName;
+                robloxUser.textContent = `@${rawName}`;
+                avatarCard.classList.remove('hidden');
+                avatarCard.classList.add('flex');
+
+                if (alreadySpun) {
+                    document.getElementById('spinInputContainer').classList.add('hidden');
+                    document.getElementById('alreadySpunContainer').classList.remove('hidden');
+                    currentUserSpunTicket = state.claims.find(c => c.username.toLowerCase() === normalized) || {
+                        username: rawName,
+                        petName: "Adopt Me Reward",
+                        ticketCode: "ADM-ACTIVE-CLAIM",
+                        status: "Pending"
+                    };
+                } else {
+                    document.getElementById('spinInputContainer').classList.remove('hidden');
+                    document.getElementById('alreadySpunContainer').classList.add('hidden');
+                    spinBtn.disabled = false;
+                }
+            }, 600);
+        }
+
+        /* ==========================================================================
+           CANVAS WHEEL RENDERING & PHYSICS
+           ========================================================================== */
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function drawWheel() {
+            const numSlices = state.pets.length;
+            if (numSlices === 0) return;
+            const sliceAngle = (2 * Math.PI) / numSlices;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = centerX - 10;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            state.pets.forEach((pet, i) => {
+                const startAngle = wheelAngle + (i * sliceAngle);
+                const endAngle = startAngle + sliceAngle;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = pet.color;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff25';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + sliceAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 13px Fredoka, sans-serif';
+
+                const label = pet.name.length > 14 ? pet.name.substring(0, 12) + '...' : pet.name;
+                ctx.fillText(label, radius - 28, 5);
+
+                ctx.fillStyle = '#FFD152';
+                ctx.font = 'bold 10px Nunito, sans-serif';
+                ctx.fillText(`[${pet.tag}]`, radius - 28, 18);
+
+                ctx.restore();
+            });
+
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#FFD152';
+            ctx.lineWidth = 6;
+            ctx.stroke();
+        }
+
+        /* ==========================================================================
+           SPIN EXECUTION & TICKS
+           ========================================================================== */
+        function executeSpinAction() {
+            if (isSpinning || !currentUser) return;
+
+            if (state.spunUsers.some(u => u.normalized === currentUser.normalized || u.fingerprint === deviceFingerprint)) {
+                alert("This device or Roblox account has already used its single spin!");
+                return;
+            }
+
+            isSpinning = true;
+            document.getElementById('spinButton').disabled = true;
+
+            const selectedPetIndex = pickWinningPetIndex();
+            const winningPet = state.pets[selectedPetIndex];
+
+            const sliceAngle = (2 * Math.PI) / state.pets.length;
+            const targetPointerAngle = (3 * Math.PI) / 2;
+            const sliceCenter = (selectedPetIndex * sliceAngle) + (sliceAngle / 2);
+            let finalAngle = targetPointerAngle - sliceCenter;
+            
+            const extraRotations = (6 + Math.floor(Math.random() * 3)) * (2 * Math.PI);
+            const targetTotalAngle = wheelAngle + extraRotations + (finalAngle - (wheelAngle % (2 * Math.PI)));
+
+            const startTime = performance.now();
+            const spinDuration = 5000;
+            const startAngle = wheelAngle;
+            let lastTickSlice = -1;
+
+            function animate(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / spinDuration, 1);
+                
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                wheelAngle = startAngle + (targetTotalAngle - startAngle) * easeOut;
+
+                const currentSlice = Math.floor((wheelAngle / (2 * Math.PI / state.pets.length))) % state.pets.length;
+                if (currentSlice !== lastTickSlice) {
+                    playTickSound();
+                    lastTickSlice = currentSlice;
+                }
+
+                drawWheel();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    isSpinning = false;
+                    handleSpinComplete(winningPet);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function pickWinningPetIndex() {
+            const totalWeight = state.pets.reduce((acc, p) => acc + parseFloat(p.chance || 1), 0);
+            let rand = Math.random() * totalWeight;
+            for (let i = 0; i < state.pets.length; i++) {
+                rand -= parseFloat(state.pets[i].chance || 1);
+                if (rand <= 0) return i;
+            }
+            return 0;
+        }
+
+        function handleSpinComplete(pet) {
+            playWinSound();
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            const randomCode = Math.floor(10000 + Math.random() * 90000);
+            const ticketCode = `ADM-${randomCode}-VIP-SEC`;
+
+            const claimRecord = {
+                id: 'claim-' + Date.now(),
+                username: currentUser.username,
+                petName: pet.name,
+                tag: pet.tag,
+                rarity: pet.rarity,
+                ticketCode: ticketCode,
+                fingerprint: deviceFingerprint,
+                date: new Date().toLocaleDateString(),
+                status: 'Pending'
+            };
+
+            state.spunUsers.push({
+                username: currentUser.username,
+                normalized: currentUser.normalized,
+                fingerprint: deviceFingerprint,
+                date: new Date().toLocaleDateString()
+            });
+
+            state.claims.unshift(claimRecord);
+            saveStateToStorage();
+            refreshClaimsUI();
+            refreshAdminViews();
+
+            currentUserSpunTicket = claimRecord;
+
+            openRewardModal(claimRecord, pet);
+
+            document.getElementById('spinInputContainer').classList.add('hidden');
+            document.getElementById('alreadySpunContainer').classList.remove('hidden');
+        }
+
+        /* ==========================================================================
+           MODALS & CLAIM INTERACTIONS
+           ========================================================================== */
+        function openRewardModal(claim, pet) {
+            document.getElementById('modalPetName').textContent = claim.petName;
+            document.getElementById('modalPetTag').textContent = claim.tag;
+            document.getElementById('modalTicketCode').textContent = claim.ticketCode;
+            document.getElementById('modalPetIcon').className = `fa-solid ${pet.icon || 'fa-dragon'} text-white`;
+
+            const vipLink = document.getElementById('modalJoinVipLink');
+            vipLink.href = state.vipServerUrl;
+
+            document.getElementById('rewardModal').classList.remove('hidden');
+        }
+
+        function closeRewardModal() {
+            document.getElementById('rewardModal').classList.add('hidden');
+        }
+
+        function copyTicketCodeModal() {
+            const code = document.getElementById('modalTicketCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const notif = document.getElementById('copyNotification');
+                notif.classList.remove('opacity-0');
+                setTimeout(() => notif.classList.add('opacity-0'), 2000);
+            });
+        }
+
+        function onJoinPrivateServerClick() {
+            const code = document.getElementById('modalTicketCode').textContent;
+            navigator.clipboard.writeText(`Hi Host! I won from the wheel. My claim code is: ${code}`);
+        }
+
+        function openTicketModal(ticket) {
+            if (!ticket) return;
+            document.getElementById('ticketPlayerName').textContent = ticket.username;
+            document.getElementById('ticketRewardName').textContent = `${ticket.petName} [${ticket.tag || 'FR'}]`;
+            document.getElementById('ticketCodeText').textContent = ticket.ticketCode;
+            document.getElementById('ticketStatusBadge').textContent = ticket.status.toUpperCase();
+            document.getElementById('ticketModalVipLink').href = state.vipServerUrl;
+            document.getElementById('ticketModal').classList.remove('hidden');
+        }
+
+        function closeTicketModal() {
+            document.getElementById('ticketModal').classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           ADMIN DASHBOARD & AUTHENTICATION
+           ========================================================================== */
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            if (!state.isAdminAuthenticated) {
+                document.getElementById('adminAuthView').classList.remove('hidden');
+                document.getElementById('adminContentView').classList.add('hidden');
+            } else {
+                document.getElementById('adminAuthView').classList.add('hidden');
+                document.getElementById('adminContentView').classList.remove('hidden');
+                refreshAdminViews();
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin() {
+            const passInput = document.getElementById('adminPassInput').value.trim();
+            const err = document.getElementById('adminLoginErr');
+
+            if (passInput === MASTER_PASSWORD) {
+                state.isAdminAuthenticated = true;
+                err.classList.add('hidden');
+                document.getElementById('adminPassInput').value = "";
+                document.getElementById('adminAuthView').classList.add('hidden');
+                document.getElementById('adminContentView').classList.remove('hidden');
+                refreshAdminViews();
+            } else {
+                err.textContent = "Akses ditolak! Password salah.";
+                err.classList.remove('hidden');
+            }
+        }
+
+        function switchAdminTab(tabId) {
+            ['petsTab', 'claimsTab', 'serverTab', 'playersTab'].forEach(t => {
+                document.getElementById(t).classList.add('hidden');
+                document.getElementById(`tabBtn-${t}`).className = "px-5 py-3 border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2 whitespace-nowrap";
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(`tabBtn-${tabId}`).className = "px-5 py-3 border-b-2 border-adoptPink text-white flex items-center gap-2 whitespace-nowrap";
+        }
+
+        function refreshAdminViews() {
+            const petsTbody = document.getElementById('adminPetsTableBody');
+            petsTbody.innerHTML = state.pets.map(p => `
+                <tr class="hover:bg-purple-950/30">
+                    <td class="p-3 font-bold text-white flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full" style="background:${p.color}"></span>
+                        <i class="fa-solid ${p.icon} text-purple-400"></i> ${p.name}
+                    </td>
+                    <td class="p-3 font-mono text-adoptYellow font-bold">${p.tag}</td>
+                    <td class="p-3 text-purple-300">${p.rarity}</td>
+                    <td class="p-3 font-bold text-white">${p.chance}%</td>
+                    <td class="p-3 text-right space-x-2">
+                        <button onclick="editPet('${p.id}')" class="text-adoptCyan hover:underline">Edit</button>
+                        <button onclick="deletePet('${p.id}')" class="text-red-400 hover:underline">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const claimsTbody = document.getElementById('adminClaimsTableBody');
+            const pendingClaims = state.claims.filter(c => c.status === 'Pending').length;
+            document.getElementById('adminPendingCount').textContent = pendingClaims;
+
+            claimsTbody.innerHTML = state.claims.map(c => `
+                <tr class="hover:bg-purple-950/30">
+                    <td class="p-3 font-bold text-white">${c.username}</td>
+                    <td class="p-3 text-adoptPink font-bold">${c.petName} [${c.tag || 'FR'}]</td>
+                    <td class="p-3 font-mono text-adoptYellow font-bold select-all">${c.ticketCode}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${c.status === 'Delivered' ? 'bg-green-500/20 text-adoptGreen' : 'bg-amber-500/20 text-adoptYellow'}">
+                            ${c.status.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right">
+                        ${c.status === 'Pending' 
+                            ? `<button onclick="markClaimStatus('${c.id}', 'Delivered')" class="px-2.5 py-1 bg-adoptGreen text-adoptDark font-bold rounded-lg hover:scale-105 transition">Deliver Pet</button>`
+                            : `<button onclick="markClaimStatus('${c.id}', 'Pending')" class="text-gray-400 hover:text-white">Re-open</button>`}
+                    </td>
+                </tr>
+            `).join('');
+
+            const playersTbody = document.getElementById('adminPlayersTableBody');
+            playersTbody.innerHTML = state.spunUsers.map((u, idx) => `
+                <tr class="hover:bg-purple-950/30">
+                    <td class="p-3 font-bold text-white">${u.username}</td>
+                    <td class="p-3 font-mono text-purple-400">${u.fingerprint || 'HW-GENERIC'}</td>
+                    <td class="p-3 text-gray-400">${u.date}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="resetUserSpin(${idx})" class="text-adoptYellow hover:underline">Reset Spin Limit</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('adminVipServerInput').value = state.vipServerUrl;
+        }
+
+        /* ==========================================================================
+           PET CRUD ACTIONS
+           ========================================================================== */
+        function openAddPetModal() {
+            state.editingPetId = null;
+            document.getElementById('petEditModalTitle').textContent = "Add New Pet to Pool";
+            document.getElementById('petNameInput').value = "";
+            document.getElementById('petTagInput').value = "FR";
+            document.getElementById('petRarityInput').value = "Legendary";
+            document.getElementById('petChanceInput').value = "5";
+            document.getElementById('petColorInput').value = "#FF6B8B";
+            document.getElementById('petIconInput').value = "fa-paw";
+            document.getElementById('petEditModal').classList.remove('hidden');
+        }
+
+        function editPet(id) {
+            const pet = state.pets.find(p => p.id === id);
+            if (!pet) return;
+            state.editingPetId = id;
+            document.getElementById('petEditModalTitle').textContent = `Edit ${pet.name}`;
+            document.getElementById('petNameInput').value = pet.name;
+            document.getElementById('petTagInput').value = pet.tag;
+            document.getElementById('petRarityInput').value = pet.rarity;
+            document.getElementById('petChanceInput').value = pet.chance;
+            document.getElementById('petColorInput').value = pet.color;
+            document.getElementById('petIconInput').value = pet.icon;
+            document.getElementById('petEditModal').classList.remove('hidden');
+        }
+
+        function closePetEditModal() {
+            document.getElementById('petEditModal').classList.add('hidden');
+        }
+
+        function savePetItemAction() {
+            const name = document.getElementById('petNameInput').value.trim();
+            const tag = document.getElementById('petTagInput').value;
+            const rarity = document.getElementById('petRarityInput').value;
+            const chance = parseFloat(document.getElementById('petChanceInput').value) || 1;
+            const color = document.getElementById('petColorInput').value;
+            const icon = document.getElementById('petIconInput').value.trim() || 'fa-paw';
+
+            if (!name) {
+                alert("Please provide an item name.");
+                return;
+            }
+
+            if (state.editingPetId) {
+                const idx = state.pets.findIndex(p => p.id === state.editingPetId);
+                if (idx !== -1) {
+                    state.pets[idx] = { ...state.pets[idx], name, tag, rarity, chance, color, icon };
+                }
+            } else {
+                state.pets.push({
+                    id: 'pet-' + Date.now(),
+                    name, tag, rarity, chance, color, icon
+                });
+            }
+
+            closePetEditModal();
+            saveStateToStorage();
+            drawWheel();
+            refreshPrizePoolList();
+            refreshAdminViews();
+        }
+
+        function deletePet(id) {
+            if (state.pets.length <= 2) {
+                alert("The wheel requires at least 2 items.");
+                return;
+            }
+            if (confirm("Are you sure you want to delete this pet from the wheel?")) {
+                state.pets = state.pets.filter(p => p.id !== id);
+                saveStateToStorage();
+                drawWheel();
+                refreshPrizePoolList();
+                refreshAdminViews();
+            }
+        }
+
+        function autoBalanceChances() {
+            const equal = parseFloat((100 / state.pets.length).toFixed(1));
+            state.pets.forEach(p => p.chance = equal);
+            saveStateToStorage();
+            refreshAdminViews();
+            refreshPrizePoolList();
+            alert(`Drop chances normalized to ~${equal}% each!`);
+        }
+
+        /* ==========================================================================
+           VIP SERVER & STATUS UPDATES
+           ========================================================================== */
+        function saveVipServerLink() {
+            const url = document.getElementById('adminVipServerInput').value.trim();
+            if (url) {
+                state.vipServerUrl = url;
+                saveStateToStorage();
+                const indicator = document.getElementById('vipSavedIndicator');
+                indicator.classList.remove('hidden');
+                setTimeout(() => indicator.classList.add('hidden'), 2500);
+            }
+        }
+
+        function testVipServerLink() {
+            const url = document.getElementById('adminVipServerInput').value.trim();
+            if (url) window.open(url, '_blank');
+        }
+
+        function markClaimStatus(id, newStatus) {
+            const claim = state.claims.find(c => c.id === id);
+            if (claim) {
+                claim.status = newStatus;
+                saveStateToStorage();
+                refreshAdminViews();
+                refreshClaimsUI();
+            }
+        }
+
+        function resetUserSpin(index) {
+            const user = state.spunUsers[index];
+            if (confirm(`Reset spin permission for ${user.username}?`)) {
+                state.spunUsers.splice(index, 1);
+                saveStateToStorage();
+                refreshAdminViews();
+            }
+        }
+
+        function exportClaimsData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.claims, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `AdoptMe_Claims_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        /* ==========================================================================
+           STORAGE & UI SYNC
+           ========================================================================== */
+        function saveStateToStorage() {
+            localStorage.setItem('adoptme_pets', JSON.stringify(state.pets));
+            localStorage.setItem('adoptme_claims', JSON.stringify(state.claims));
+            localStorage.setItem('adoptme_spun_users', JSON.stringify(state.spunUsers));
+            localStorage.setItem('adoptme_vip_url', state.vipServerUrl);
+        }
+
+        function refreshPrizePoolList() {
+            const container = document.getElementById('prizePoolList');
+            document.getElementById('activeItemsBadge').textContent = `${state.pets.length} Items`;
+            container.innerHTML = state.pets.map(p => `
+                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-purple-950/40 border border-purple-500/20 text-xs">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white" style="background:${p.color}">
+                            <i class="fa-solid ${p.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                <span>${p.name}</span>
+                                <span class="text-[9px] bg-purple-900 border border-purple-500/40 text-adoptYellow px-1.5 py-0.2 rounded-md font-mono">${p.tag}</span>
+                            </div>
+                            <span class="text-[10px] text-purple-300 font-nunito">${p.rarity}</span>
+                        </div>
+                    </div>
+                    <span class="font-mono text-purple-300 font-bold">${p.chance}%</span>
+                </div>
+            `).join('');
+        }
+
+        function refreshClaimsUI() {
+            const container = document.getElementById('recentClaimsList');
+            if (state.claims.length === 0) {
+                container.innerHTML = `<div class="text-gray-400 text-center py-4">No reward claims yet. Be the first to spin!</div>`;
+                return;
+            }
+            container.innerHTML = state.claims.slice(0, 6).map(c => `
+                <div class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/20 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-user text-purple-400 text-base"></i>
+                        <div>
+                            <div class="font-bold text-white">${c.username}</div>
+                            <div class="text-[10px] text-adoptPink font-bold">Won: ${c.petName} [${c.tag || 'FR'}]</div>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${c.status === 'Delivered' ? 'bg-green-500/20 text-adoptGreen' : 'bg-amber-500/20 text-adoptYellow'}">
+                        ${c.status.toUpperCase()}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        /* ==========================================================================
+           INITIALIZATION
+           ========================================================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            // Bersihkan sisa hash lama di browser
+            localStorage.removeItem('adoptme_admin_hash');
+            deviceFingerprint = generateDeviceFingerprint();
+            drawWheel();
+            refreshPrizePoolList();
+            refreshClaimsUI();
+        });
+    </script>
+</body>
+</html>
